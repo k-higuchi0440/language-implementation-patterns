@@ -1,6 +1,6 @@
 package pattern.parsing.pattern2_ll1lexer
 
-object Main extends App {
+object LL1LexerApp extends App {
   val lexer = ListLexer("[ apple, banana  ]")
   lexer.print()
   /********** 出力 **********
