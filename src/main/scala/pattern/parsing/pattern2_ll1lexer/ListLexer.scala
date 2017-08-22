@@ -16,6 +16,7 @@ case class ListLexer(input: String) extends LL1Lexer[ListLexer](input) {
         case Comma                   => (Token.Comma, str.tail)
         case LBracket                => (Token.LBracket, str.tail)
         case RBracket                => (Token.RBracket, str.tail)
+        case Equal                   => (Token.Equal, str.tail)
         case invalidChar             => throw new Exception(s"Invalid character found: $invalidChar")
       }
     }
@@ -26,6 +27,20 @@ case class ListLexer(input: String) extends LL1Lexer[ListLexer](input) {
         val (token, str) = loop(input)
         (token, ListLexer(str))
     }
+  }
+
+  def nextTokens(count: Int): (Seq[Token], ListLexer) = {
+    @tailrec
+    def loop(lexer: ListLexer, tokens: Vector[Token], cnt: Int): (Seq[Token], ListLexer) = {
+      val (nextToken, nextLexer) = lexer.nextToken
+      val nextTokens = tokens :+ nextToken
+      if (cnt <= 0 || nextToken.tokenType == TokenType.EOF)
+        (nextTokens, nextLexer)
+      else {
+        loop(nextLexer, nextTokens, cnt - 1)
+      }
+    }
+    loop(this, Vector.empty, count)
   }
 
 }

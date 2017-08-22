@@ -24,4 +24,8 @@ object TokenType {
     override def toString: String = "RBRACK"
   }
 
+  case object Equal extends TokenType {
+    override def toString: String = "EQUAL"
+  }
+
 }

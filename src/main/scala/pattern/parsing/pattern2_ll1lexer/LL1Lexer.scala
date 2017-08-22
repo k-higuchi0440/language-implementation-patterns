@@ -5,6 +5,7 @@ import scala.annotation.tailrec
 abstract class LL1Lexer[Lexer <: LL1Lexer[Lexer]](input: String) {
 
   def nextToken: (Token, Lexer)
+  def nextTokens(count: Int): (Seq[Token], ListLexer)
 
   lazy val lookAhead: Option[Char] = input.headOption
 
