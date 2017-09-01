@@ -8,3 +8,4 @@ sealed trait TokenType
 case object Plus extends TokenType
 case object One extends TokenType
 case object Two extends TokenType
+case object TVector extends TokenType
