@@ -1,4 +1,4 @@
-package pattern.symboltable
+package pattern.symboltable.scope
 
 import pattern.symboltable.symbol.Symbol
 

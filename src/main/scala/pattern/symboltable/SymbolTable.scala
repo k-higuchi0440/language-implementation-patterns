@@ -1,5 +1,6 @@
 package pattern.symboltable
 
+import pattern.symboltable.scope.Scope
 import pattern.symboltable.symbol.{BuiltinTypeSymbol, Symbol}
 
 import scala.collection.SortedMap
