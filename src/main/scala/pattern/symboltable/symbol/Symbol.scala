@@ -16,7 +16,9 @@ sealed trait Symbol {
   override def toString: String = s"Symbol('$name': ${typ.name})"
 }
 
-case class VariableSymbol(name: String, typ: Type) extends Symbol
+case class VariableSymbol(name: String, typ: Type) extends Symbol {
+  override def toString: String = s"Variable${super.toString}"
+}
 
 case class BuiltinTypeSymbol(name: String) extends Symbol with Type { // 型としても機能する
   override val typ: Type = this
@@ -60,4 +62,39 @@ object MethodSymbol {
     typ: Type,
     enclosingScope: Option[Scope],
   ): MethodSymbol = new MethodSymbol(name, typ, enclosingScope, SortedMap.empty)
+}
+
+case class StructSymbol(
+  name: String,
+  enclosingScope: Option[Scope],
+  members: SortedMap[String, Symbol]) extends Symbol with Type with Scope {
+  override val typ: StructSymbol = this
+  override val scopeName = "struct"
+
+  override def define(symbol: Symbol): StructSymbol =
+    copy(members = members.updated(symbol.name, symbol))
+
+  override def resolve(name: String): Option[Symbol] = members.get(name) match {
+    case some @ Some(_) => some
+    case None           => enclosingScope.flatMap(_.resolve(name))
+  }
+
+  def resolveMember(name: String): Option[Symbol] = members.get(name)
+
+  override def toString: String = toStringAsSymbol
+  def toStringAsSymbol = s"Struct${super.toString}"
+  def toStringAsScope: String = s"StructScope(${members.mkString(", ")})"
+}
+
+object StructSymbol {
+  private def apply(
+    name: String,
+    enclosingScope: Option[Scope],
+    members: SortedMap[String, Symbol],
+  ): StructSymbol = new StructSymbol(name, enclosingScope, members)
+
+  def apply(
+    name: String,
+    enclosingScope: Option[Scope],
+  ): StructSymbol = new StructSymbol(name, enclosingScope, SortedMap.empty)
 }
