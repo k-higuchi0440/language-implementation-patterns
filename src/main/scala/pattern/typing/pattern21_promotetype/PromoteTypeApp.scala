@@ -7,6 +7,7 @@ import org.antlr.runtime.tree._
 import org.antlr.runtime.{ANTLRStringStream, TokenRewriteStream}
 import pattern.typing.pattern21_promotetype.ast.{CymbolAdaptor, TreeVisitorActions}
 import pattern.typing.pattern21_promotetype.symboltable.SymbolTable
+import pattern.typing.pattern22_typesafe.listener.CymbolListener
 
 object PromoteTypeApp extends App {
   val string =
@@ -44,7 +45,7 @@ object PromoteTypeApp extends App {
   defineSymbol.downup(tree)
 
   nodes.reset()
-  val computeType = new Types(nodes, defineSymbol.getSymtab)
+  val computeType = new Types(nodes, defineSymbol.getSymtab, new CymbolListener(tokens))
   computeType.downup(tree)
 
   val visitor = new TreeVisitor(new CommonTreeAdaptor())
