@@ -7,9 +7,11 @@ options {
 }
 @members {
     SymbolTable symtab;
-    public Types(TreeNodeStream input, SymbolTable symtab) {
+    CymbolListener listener;
+    public Types(TreeNodeStream input, SymbolTable symtab, CymbolListener listener) {
         this(input);
         this.symtab = symtab;
+        this.listener = listener;
     }
 }
 // END: header

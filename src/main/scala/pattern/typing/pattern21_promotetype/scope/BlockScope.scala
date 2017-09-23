@@ -1,16 +1,17 @@
 package pattern.typing.pattern21_promotetype.scope
 
-import pattern.typing.pattern21_promotetype.symbol.{MapSymbols, Symbol, Symbols}
+import pattern.typing.pattern21_promotetype.symbol.{MapSymbols, Symbols}
 
 case class BlockScope(
-  symbols: Symbols,
+  override protected var _symbols: Symbols,
   enclosingScope: Option[Scope]
-) extends Scope {
+) extends BaseScope {
   override val symbolName: Option[String] = None
   override val scopeName: String = "Block"
-  override def define(symbol: Symbol): Scope = copy(symbols = symbols.define(symbol))
-}
+ }
 
 object BlockScope {
+  private def apply(_symbols: Symbols, enclosingScope: Option[Scope]): BlockScope =
+    new BlockScope(_symbols, enclosingScope)
   def apply(enclosingScope: Option[Scope]): BlockScope = new BlockScope(MapSymbols(), enclosingScope)
 }

@@ -2,7 +2,6 @@ package pattern.typing.pattern21_promotetype.symbol
 
 import pattern.typing.pattern21_promotetype.`type`.{NullType, Type}
 import pattern.typing.pattern21_promotetype.ast.CymbolAST
-import pattern.typing.pattern21_promotetype.scope.Scope
 
 /**
   * 記号
@@ -34,7 +33,6 @@ case class VariableSymbol(name: String, typ: Type, node: Option[CymbolAST]) exte
 case class MethodSymbol(
   name: String,
   typ: Type,
-  enclosingScope: Option[Scope],
   arguments: Symbols,
   blockSymbols: Symbols,
   node: Option[CymbolAST],
@@ -46,15 +44,13 @@ object MethodSymbol {
   def apply(
      name: String,
      typ: Type,
-     enclosingScope: Option[Scope],
      node: Option[CymbolAST],
-   ): MethodSymbol = new MethodSymbol(name, typ, enclosingScope, VectorSymbols(), MapSymbols(), node)
+   ): MethodSymbol = new MethodSymbol(name, typ, VectorSymbols(), MapSymbols(), node)
 }
 
 case class StructSymbol(
   name: String,
   typ: Type,
-  enclosingScope: Option[Scope],
   members: Symbols,
   node: Option[CymbolAST],
 ) extends Symbol {
@@ -66,7 +62,6 @@ object StructSymbol {
   def apply(
     name: String,
     typ: Type,
-    enclosingScope: Option[Scope],
     node: Option[CymbolAST],
-  ): StructSymbol = new StructSymbol(name, typ, enclosingScope, MapSymbols(), node)
+  ): StructSymbol = new StructSymbol(name, typ, MapSymbols(), node)
 }

@@ -1,17 +1,22 @@
 package pattern.typing.pattern21_promotetype.scope
 
-import pattern.typing.pattern21_promotetype.symbol.{MapSymbols, Symbol, Symbols}
+import pattern.typing.pattern21_promotetype.symbol.{MapSymbols, Symbols}
 
 case class StructScope(
   symbolName: Option[String],
-  symbols: Symbols,
-  enclosingScope: Option[Scope]
-) extends Scope {
+  override protected var _symbols: Symbols,
+  enclosingScope: Option[Scope],
+) extends BaseScope {
   override def scopeName = "Struct"
-  override def define(symbol: Symbol): StructScope = copy(symbols = symbols.define(symbol))
 }
 
 object StructScope {
+  private def apply(
+   symbolName: Option[String],
+   _symbols: Symbols,
+   enclosingScope: Option[Scope],
+  ): StructScope = new StructScope(symbolName, _symbols, enclosingScope)
+
   def apply(
     symbolName: String,
     enclosingScope: Option[Scope]

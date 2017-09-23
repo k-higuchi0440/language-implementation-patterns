@@ -106,7 +106,7 @@ public class Def extends TreeFilter {
     public String getGrammarFileName() { return "/Users/parrt/research/book/TPDSL/Book/code/semantics/promote/Def.g"; }
 
 
-        SymbolTable symtab;
+        public SymbolTable symtab;
         Scope currentScope;
         MethodSymbol currentMethod;
         public Def(TreeNodeStream input, SymbolTable symtab) {
@@ -114,10 +114,6 @@ public class Def extends TreeFilter {
             this.symtab = symtab;
             currentScope = symtab;
         }
-
-    public SymbolTable getSymtab() {
-        return (SymbolTable) currentScope;
-    }
 
     // $ANTLR start "topdown"
     // /Users/parrt/research/book/TPDSL/Book/code/semantics/promote/Def.g:20:1: topdown : ( enterBlock | enterMethod | enterStruct | atoms | varDeclaration | ret );
@@ -368,18 +364,12 @@ public class Def extends TreeFilter {
                         method.copy$default$1(),
                         method.copy$default$2(),
                         method.copy$default$3(),
-                        method.copy$default$4(),
                         currentScope.symbols(),
-                        method.copy$default$6()
+                        method.copy$default$5()
                 );
 
-                Scope methodUpdatedScope = enclosingMethodScope.enclosingScope().get().define(updated);
-
-                currentScope = enclosingMethodScope.copy(
-                        enclosingMethodScope.copy$default$1(),
-                        enclosingMethodScope.copy$default$2(),
-                        Some.apply(methodUpdatedScope)
-                );
+                enclosingMethodScope.enclosingScope().get().define(updated);
+                currentScope = enclosingMethodScope;
                       
             }
 
@@ -449,21 +439,15 @@ public class Def extends TreeFilter {
             if ( state.backtracking==1 ) {
 
                 //System.out.println("line "+ID1.getLine()+": def struct "+(ID1!=null?ID1.getText():null));
-                Type newStructType;
-                if(currentScope instanceof StructScope) {
-                    Option<Type> enclosingType = currentScope.symbolName()
-                            .flatMap((name) -> currentScope.resolve(name).map(Symbol::typ));
-                    newStructType = Type$.MODULE$.defineType((ID1!=null?ID1.getText():null), enclosingType);
-                } else {
-                    newStructType = Type$.MODULE$.defineType((ID1!=null?ID1.getText():null), Option.empty());
-                }
+                Type newStructType = Type$.MODULE$.defineType((ID1!=null?ID1.getText():null));
                 StructSymbol ss = StructSymbol.apply(
                         (ID1!=null?ID1.getText():null),
                         newStructType, // 型定義しとく
-                        Some.apply(currentScope),
                         Some.apply(ID1));
                 ID1.symbol_$eq(Some.apply(ss));
-                currentScope = StructScope.apply(ss.name(), Some.apply(currentScope.define(ss))); // set current scope to struct scope
+
+                currentScope.define(ss);
+                currentScope = StructScope.apply(ss.name(), Some.apply(currentScope)); // set current scope to struct scope
 
 
             }
@@ -498,11 +482,11 @@ public class Def extends TreeFilter {
                 StructSymbol updated = struct.copy(
                         struct.copy$default$1(),
                         struct.copy$default$2(),
-                        struct.copy$default$3(),
                         currentScope.symbols(),
-                        struct.copy$default$5()
+                        struct.copy$default$4()
                 );
-                currentScope = enclosingScope.define(updated);    // pop scope
+                enclosingScope.define(updated);
+                currentScope = enclosingScope;    // pop scope
                       
             }
 
@@ -576,12 +560,13 @@ public class Def extends TreeFilter {
                 MethodSymbol ms = MethodSymbol.apply(
                         (ID2!=null?ID2.getText():null),
                         type3,
-                        Some.apply(currentScope),
                         Some.apply(ID2)
                 );
                 currentMethod = ms;
                 ID2.symbol_$eq(Some.apply(ms));         // track in AST
-                currentScope = MethodScope.apply(ms.name(), Some.apply(currentScope.define(ms))); // set current scope to method scope
+
+                currentScope.define(ms);
+                currentScope = MethodScope.apply(ms.name(), Some.apply(currentScope)); // set current scope to method scope
 
 
             }
@@ -651,12 +636,13 @@ public class Def extends TreeFilter {
                 MethodSymbol updated = method.copy(
                         method.copy$default$1(),
                         method.copy$default$2(),
-                        method.copy$default$3(),
                         currentScope.symbols(),
-                        method.copy$default$5(),
-                        method.copy$default$6()
+                        method.copy$default$4(),
+                        method.copy$default$5()
                 );
-                currentScope = enclosingScope.define(updated);    // pop arg scope
+
+                enclosingScope.define(updated);
+                currentScope = enclosingScope;    // pop arg scope
                       
             }
 
@@ -759,7 +745,8 @@ public class Def extends TreeFilter {
                 //System.out.println("line "+ID4.getLine()+": def "+(ID4!=null?ID4.getText():null));
                 VariableSymbol vs = VariableSymbol.apply((ID4!=null?ID4.getText():null), type5, Some.apply(ID4));
                 ID4.symbol_$eq(Some.apply(vs));         // track in AST
-                currentScope = currentScope.define(vs);
+
+                currentScope.define(vs);
                       
             }
 

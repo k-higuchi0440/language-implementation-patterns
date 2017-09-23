@@ -7,10 +7,6 @@ trait Scope {
   def symbolName: Option[String]
   def symbols: Symbols
   def enclosingScope: Option[Scope]
-  def define(symbol: Symbol): Scope
-
-  def resolve(name: String): Option[Symbol] = symbols.resolve(name) match {
-    case symbol: Some[_] => symbol
-    case None => enclosingScope.flatMap(_.resolve(name))
-  }
+  def define(symbol: Symbol): Unit
+  def resolve(name: String): Option[Symbol]
 }

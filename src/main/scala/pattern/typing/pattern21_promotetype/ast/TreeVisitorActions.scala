@@ -15,7 +15,7 @@ object TreeVisitorActions {
     }
     def showTypes(node: CymbolAST, tokens: TokenRewriteStream): Unit = {
       if (node.evalType.isDefined && node.getType != CymbolParser.EXPR) {
-        printf("%-17s", tokens.toString(node.getTokenStartIndex, node.getTokenStopIndex))
+        printf("%-22s", tokens.toString(node.getTokenStartIndex, node.getTokenStopIndex))
         val ts = node.evalType.map(_.toString).getOrElse("Missing")
         printf(" type: %-8s", ts)
         if (node.promotionType.isDefined) {

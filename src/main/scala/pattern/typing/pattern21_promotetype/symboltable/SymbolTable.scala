@@ -2,7 +2,7 @@ package pattern.typing.pattern21_promotetype.symboltable
 
 import pattern.typing.pattern21_promotetype.`type`.Type
 import pattern.typing.pattern21_promotetype.scope.GlobalScope
-import pattern.typing.pattern21_promotetype.symbol.{BuiltinSymbol, MapSymbols, Symbol, Symbols}
+import pattern.typing.pattern21_promotetype.symbol.{BuiltinSymbol, MapSymbols, Symbols}
 
 import scala.collection.SortedMap
 
@@ -10,14 +10,13 @@ import scala.collection.SortedMap
   * 単一スコープ(グローバルスコープ)を表現する記号表
   *
   */
-case class SymbolTable private (symbols: Symbols) extends GlobalScope {
-  override def define(symbol: Symbol): SymbolTable = copy(symbols = symbols.define(symbol))
+case class SymbolTable private (override protected var _symbols: Symbols) extends GlobalScope {
   override def toString: String =
     s"SymbolTable(${symbols.value.mkString("\n  ", "\n  ", "\n")})"
 }
 
 object SymbolTable {
-  private def apply(symbols: Symbols): SymbolTable = new SymbolTable(symbols)
+  private def apply(_symbols: Symbols): SymbolTable = new SymbolTable(_symbols)
   def apply(): SymbolTable = {
     val builtinSymbols = MapSymbols(SortedMap(
       "char"    -> BuiltinSymbol("char", Type.tChar, None),

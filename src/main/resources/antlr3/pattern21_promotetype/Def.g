@@ -6,7 +6,7 @@ options {
   filter = true;
 }
 @members {
-    SymbolTable symtab;
+    public SymbolTable symtab;
     Scope currentScope;
     MethodSymbol currentMethod;
     public Def(TreeNodeStream input, SymbolTable symtab) {
@@ -14,7 +14,6 @@ options {
         this.symtab = symtab;
         currentScope = symtab;
     }
-    public SymbolTable getSymtab() { return (SymbolTable) currentScope; }
 }
 // END: header
 
@@ -49,16 +48,11 @@ exitBlock
                 method.copy$default$1(),
                 method.copy$default$2(),
                 method.copy$default$3(),
-                method.copy$default$4(),
                 currentScope.symbols(),
-                method.copy$default$6()
+                method.copy$default$5()
         );
-        Scope methodUpdatedScope = enclosingMethodScope.enclosingScope().get().define(updated);
-        currentScope = enclosingMethodScope.copy(
-                enclosingMethodScope.copy$default$1(),
-                enclosingMethodScope.copy$default$2(),
-                Some.apply(methodUpdatedScope)
-        );
+        enclosingMethodScope.enclosingScope().get().define(updated);
+        currentScope = enclosingMethodScope;
         }
     ;
 
@@ -72,7 +66,8 @@ enterStruct
                 Some.apply(currentScope),
                 Some.apply($ID));
         $ID.symbol_$eq(Some.apply(ss));
-        currentScope = StructScope.apply(ss.name(), Some.apply(currentScope.define(ss))); // set current scope to struct scope
+        currentScope.define(ss);
+        currentScope = StructScope.apply(ss.name(), Some.apply(currentScope)); // set current scope to struct scope
         }
     ;
 exitStruct
@@ -84,11 +79,11 @@ exitStruct
         StructSymbol updated = struct.copy(
                 struct.copy$default$1(),
                 struct.copy$default$2(),
-                struct.copy$default$3(),
                 currentScope.symbols(),
-                struct.copy$default$5()
+                struct.copy$default$4()
         );
-        currentScope = enclosingScope.define(updated);    // pop scope
+        enclosingScope.define(updated);
+        currentScope = enclosingScope;    // pop scope
         }
     ;
 // END: struct
@@ -105,12 +100,13 @@ enterMethod
         );
         currentMethod = ms;
         $ID.symbol_$eq(Some.apply(ms));         // track in AST
-        currentScope = MethodScope.apply(ms.name(), Some.apply(currentScope.define(ms))); // set current scope to method scope
+        currentScope.define(ms);
+        currentScope = MethodScope.apply(ms.name(), Some.apply(currentScope)); // set current scope to method scope
         }
     ;
 
 /** Track method associated with this return. */
-ret	:	^('return' .) {$ret.start.symbol = currentMethod;}
+ret	:	^('return' .) {$ret.start.symbol_$eq(Some.apply(currentMethod));}
 	;
 	
 exitMethod
@@ -126,7 +122,8 @@ exitMethod
                 method.copy$default$5(),
                 method.copy$default$6()
         );
-        currentScope = enclosingScope.define(updated);    // pop arg scope
+        enclosingScope.define(updated);
+        currentScope = enclosingScope;    // pop arg scope
         }
     ;
 
@@ -137,7 +134,7 @@ exitMethod
 atoms
 @init {CymbolAST t = (CymbolAST)input.LT(1);}
     :  {t.hasAncestor(EXPR)||t.hasAncestor(ASSIGN)}? ID
-       {t.scope = currentScope;}
+       {t.scope_$eq(Some.apply(currentScope));}
     ;
 //END: atoms
 
@@ -148,7 +145,7 @@ varDeclaration // global, parameter, or local variable
         //System.out.println("line "+$ID.getLine()+": def "+$ID.text);
         VariableSymbol vs = VariableSymbol.apply($ID.text, $type.type, Some.apply(ID4));
         $ID.symbol_$eq(Some.apply(vs));         // track in AST
-        currentScope = currentScope.define(vs);
+        currentScope.define(vs);
         }
     ;
 // END: field
